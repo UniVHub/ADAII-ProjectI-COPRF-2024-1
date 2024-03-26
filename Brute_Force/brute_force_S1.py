@@ -1,74 +1,104 @@
-def riegoOptimo(finca, i, j):
-  # type: (list[tuple], int, int) -> tuple[int, list[tuple]]
-
-  """
-  Dada una finca con 'n' tablones, calcula el plan de riego óptimo tal que
-  la sumatoria de costos de riegos del plan sea mínima.
-
-  Parámetros
-  ----------
-  finca : list[tuple]
-    Lista de tablones donde cada tablón es una tupla de tres enteros que: 
-    contienen la información del tablon: (Supervivencia, Regado, Prioridad).
-
-  i : int
-    Indice inicial
-
-  j : int
-    Indice final
-
-  Retorna
-  -------
-  Tuple[int, list[tuple[int, int, int]]]
-    Tupla que contine el costo mínimo y la lista de tablones correspondiente que
-    obedecen al plan de riego.
-  """
-
-  def evaluarCosto(tablon, ti):
-    # type: (tuple[int, int, int], int) -> int
-
+class FuerzaBruta:
+    # type: (list[tuple], int, int) -> tuple[int, list[tuple]]
     """
-    Calcula el costo de regar un tablón en un determinado tiempo
-    """
-
-    ts = tablon[0]
-    tr = tablon[1]
-    p = tablon[2]
-
-    if (ts - tr >= ti):
-      return ts - (ti + tr)
-
-    return p * ((ti + tr) - ts)
-
-  if (i == j):
-    costo = 0
-    tiempo = 0
-
-    for tablon in finca:
-      costo += evaluarCosto(tablon, tiempo)
-      tiempo += tablon[1]
-
-    return (costo, finca[:])
-
-  else:
-    costo = float('inf')
-    nuevaFinca = []
-
-    # Aquí se realizan las permutaciones
-    for k in range(i, j):
-      finca[i], finca[k] = finca[k], finca[i] 
-      elementos = riegoOptimo(finca, i+1, j)
-      finca[i], finca[k] = finca[k], finca[i]
+    Clase que implementa el algoritmo de Fuerza Bruta para resolver el problema de riego de tablones de una finca.
+    
+    Args:
+      finca (list): Una lista de tablones de la finca. Cada tablón es una tupla de tres elementos: tiempo de supervivencia (ts), tiempo de riego (tr) y prioridad (p).
       
-      # Si el costo de la permutación es menor a la encontrada, guardar
-      # el plan de riego
-      if elementos[0] < costo:
-        costo = elementos[0]
-        nuevaFinca = elementos[1]
+    Attributes:
+      finca (list): Lista de tablones de la finca.
+      n (int): Número de tablones en la finca.
+      
+    Methods:
+      evaluarCosto(tablon, ti): Evalúa el costo de riego de un tablón en un tiempo dado.
+      calcular(i, j): Calcula el costo mínimo de riego y el orden óptimo de riego de los tablones en el rango [i, j).
+      calcularResultadoOptimo(): Devuelve los índices de los tablones en el orden en que se deben regar según la solución óptima.
+    """
+    
+    def __init__(self, finca):
+        self.finca = finca
+        self.n = len(finca)
 
-    return (costo, nuevaFinca)
+    def evaluarCosto(self, tablon, ti):
+        # type: (tuple[int, int, int], int) -> int
 
-finca = [(10,3,4), (2,2,1), (5,3,3), (8,1,1), (6,4,2)]
-n = len(finca)
+        """
+        Evalúa el costo de riego de un tablón en un tiempo dado.
 
-print(riegoOptimo(finca, 0, n))
+        Args:
+        - tablon (tuple): Una tupla que representa un tablón de la finca.
+          - tr (int): Tiempo de riego.
+          - ts (int): Tiempo de supervivencia.
+          - p (int): Prioridad.
+        - ti (int): Tiempo actual.
+
+        Returns:
+        - int: El costo de riego del tablón en el tiempo dado.
+        """
+        ts = tablon[0]
+        tr = tablon[1]
+        p = tablon[2]
+
+        if ts - tr >= ti:
+            return ts - (ti + tr)
+
+        return p * ((ti + tr) - ts)
+
+    def calcular(self, i, j):
+        """
+        Calcula el costo mínimo de riego y el orden óptimo de riego de los tablones en el rango [i, j).
+
+        Args:
+        - i (int): Indice inicial del rango.
+        - j (int): Indice final del rango.
+
+        Returns:
+        - tuple: Una tupla que contiene el costo mínimo de riego y una lista con el orden óptimo de riego de los tablones.
+        """
+        if i == j:
+            costo = 0
+            tiempo = 0
+
+            for tablon in self.finca:
+                costo += self.evaluarCosto(tablon, tiempo)
+                tiempo += tablon[1]
+
+            return (costo, self.finca[:])
+
+        else:
+            costo = float("inf")
+            nuevaFinca = []
+
+            # Aquí se realizan las permutaciones
+            for k in range(i, j):
+                self.finca[i], self.finca[k] = self.finca[k], self.finca[i]
+                elementos = self.calcular(i + 1, j)
+                self.finca[i], self.finca[k] = self.finca[k], self.finca[i]
+
+                # Si el costo de la permutación es menor a la encontrada, guardar el plan de riego
+                if elementos[0] < costo:
+                    costo = elementos[0]
+                    nuevaFinca = elementos[1]
+
+            return (costo, nuevaFinca)
+
+    def calcularResultadoOptimo(self):
+        """
+        Devuelve los índices de los tablones en el orden en que se deben regar según la solución óptima.
+
+        Returns:
+        - list: Una lista de índices que representa el orden óptimo de riego de los tablones, cuyo primer elemento es el costo total del riego y los siguientes son los índices de los tablones en el orden en que se deben regar.
+        """
+        resultado = self.calcular(0, self.n)
+        indices = []
+
+        indices.append(resultado[0])
+
+        for tablon in resultado[1]:
+            indices.append(self.finca.index(tablon))
+
+        return indices
+
+
+
