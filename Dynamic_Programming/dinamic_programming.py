@@ -2,7 +2,8 @@ class ProgramacionDinamica:
     # type: (tuple[int, int, int], int) -> int
 
     """
-    Clase que implementa el algoritmo de programación dinámica para calcular el orden óptimo de riego de los tablones en una finca.
+    Clase que implementa el algoritmo de programación dinámica para calcular el 
+    orden óptimo de riego de los tablones en una finca.
 
     Args:
       finca (list): Lista de tablones de la finca. Cada tablón es una lista de tres elementos: tiempo de riego (tr), tiempo de supervivencia (ts) y prioridad (p).
@@ -40,16 +41,32 @@ class ProgramacionDinamica:
             return ts - (ti + tr)
 
         return p * ((ti + tr) - ts)
+    
+    def calcularTiempo(self, finca):
+      """
+      Calcula el tiempo tomado en regar una determinada finca.
 
-    def calcular(self, finca=None, tiempo=0, memo={}):
-        # type: (list[tuple[int, int, int]], int, dict) -> tuple[int, list[tuple[int, int, int]]]
+      Args:
+        finca (list): Lista que contiene varios tablones.
+
+      Returns:
+        float: El costo de regar el tablón en el tiempo dado.
+      """
+      tiempo = 0
+
+      for tablon in finca:
+        tiempo += tablon[1]
+
+      return tiempo
+
+    def calcular(self, finca=None, memo={}):
+        # type: (list[tuple[int, int, int]], dict) -> tuple[int, list[tuple[int, int, int]]]
 
         """
         Calcula el orden óptimo de riego de los tablones en la finca.
 
         Args:
           finca (list, optional): Lista de tablones de la finca. Si no se proporciona, se utiliza la finca almacenada en el atributo `finca` de la clase. Default es None.
-          tiempo (int, optional): Tiempo actual de riego. Default es 0.
           memo (dict, optional): Diccionario para almacenar resultados ya calculados. Default es {}.
 
         Returns:
@@ -58,48 +75,46 @@ class ProgramacionDinamica:
         if finca is None:
             finca = self.finca
 
-        if len(finca) == 1:
-            tablon = finca[0]  # Obtener el tablon
-            costo = self.evaluarCosto(tablon, tiempo)  # Evaluar el tablon con el tiempo
-            return (costo, [tablon])  # Devolver el costo y el tablon
+        if (len(finca) == 1):
+          tablon = finca[0] # Obtener el tablon
+          costo = self.evaluarCosto(tablon, 0) # Evaluar el tablon con el tiempo
+          return (costo, [tablon]) # Devolver el costo y el tablon
+        
         else:
-            costoF = float("inf")
-            ordenF = []
-            ordenesCandidatos = []
+          costoF = float('inf')
+          ordenF = []
+          ordenesCandidatos = []
 
-            for i, tablon in enumerate(finca):
-                fincaRestante = finca[:]  # Se crea una copia de finca
-                fincaRestante.pop(i)  # Se elimina el tablon iterando
+          for i in range (len(finca) - 1, -1, -1):
+            fincaRestante = finca[:] # Se crea una copia de finca
+            tablon = fincaRestante.pop(i)[:] # Se elimina y guarda el tablon iterado
+            tiempoR = self.calcularTiempo(fincaRestante)
 
-                costoTablon = self.evaluarCosto(
-                    tablon, tiempo
-                )  # Se calcula el costo del tbln
+            costoTablon = self.evaluarCosto(tablon, tiempoR) # Se calcula el costo del tbln
 
-                # Se realiza recursión con la finca restante (Sumando el tiempo de regado)
-                if (tuple(fincaRestante), tiempo) in memo:
-                    costo, orden = memo[(tuple(fincaRestante), tiempo)]
-                else:
-                    costo, orden = self.calcular(
-                        fincaRestante, tiempo + tablon[1], memo
-                    )
+            # Se realiza recursión con la finca restante
+            if ((tuple(fincaRestante)) in memo):
+              costo, orden = memo[(tuple(fincaRestante))]
+            else:
+              costo, orden = self.calcular(fincaRestante, memo)
 
-                memo[(tuple(fincaRestante), tiempo)] = (costo, orden)
-                # Se actualiza el costo y el orden ya que no tienen el tablon restante
-                costo += costoTablon
-                orden = [tablon] + orden
+            memo[tuple(fincaRestante)] = (costo, orden)
 
-                # Se añade el orden candidato
-                ordenesCandidatos.append((costo, orden))
+            # Se actualiza el costo y el orden ya que no tienen el tablon restante
+            costo += costoTablon
+            orden = orden + [tablon]
 
-            # Se evalua cual es el orden que consume menos
-            for orden in ordenesCandidatos:
-                if orden[0] < costoF:  # Si el costo del orden es menor al que se tiene
-                    costoF = orden[0]
-                    ordenF = orden[1]
-                # De resto, no se hace nada
+            # Se añade el orden candidato
+            ordenesCandidatos.append((costo, orden))
 
-            # Retorna el costo final y el orden final
-            return (costoF, ordenF)
+          # Se evalua cual es el orden que consume menos
+          for orden in ordenesCandidatos:
+            if (orden[0] < costoF): # Si el costo del orden es menor al que se tiene
+              costoF = orden[0]
+              ordenF = orden[1]
+              
+        # Retornar el orden y costo final
+        return (costoF, ordenF)
 
     def calcularResultadoOptimo(self):
         """
