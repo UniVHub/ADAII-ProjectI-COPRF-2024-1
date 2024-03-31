@@ -1,6 +1,6 @@
 from Brute_Force.brute_force_S1 import FuerzaBruta
 from Dynamic_Programming.dinamic_programming import ProgramacionDinamica
-
+from Greedy_Programming.greedy_programming import Voraz
 
 
 class Logica:
