@@ -106,7 +106,7 @@ class Logica:
     def usar_algoritmo(self):
         if self.algoritmoSeleccionado == "AFB":
             riegoOptimo = FuerzaBruta(self.finca)
-            solucion = riegoOptimo.calcularResultadoOptimo()
+            solucion = riegoOptimo.roFB()
             self.resultadoOptimo = solucion
             return solucion
 
@@ -114,7 +114,7 @@ class Logica:
             print("PENDIENTE")
         elif self.algoritmoSeleccionado == "APD":
             riegoOptimo = ProgramacionDinamica(self.finca)
-            solucion = riegoOptimo.calcularResultadoOptimo()
+            solucion = riegoOptimo.roPD()
             self.resultadoOptimo = solucion
             return solucion
         else:
