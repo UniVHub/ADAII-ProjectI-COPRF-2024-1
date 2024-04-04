@@ -2,7 +2,6 @@ from Brute_Force.brute_force_S1 import FuerzaBruta
 from Dynamic_Programming.dinamic_programming import ProgramacionDinamica
 from Greedy_Programming.greedy_programming import ProgramacionVoraz
 
-
 class Logica:
     def __init__(self):
         self.posiblesAlgoritmos = {
@@ -106,9 +105,12 @@ class Logica:
     def usar_algoritmo(self):
         if self.algoritmoSeleccionado == "AFB":
             riegoOptimo = FuerzaBruta(self.finca)
-            solucion = riegoOptimo.calcularResultadoOptimo()
+            startTime = time.time()
+            solucion = riegoOptimo.roFB()
+            endTime = time.time()
+            executionTime = endTime - startTime
             self.resultadoOptimo = solucion
-            return solucion
+            return executionTime
 
         elif self.algoritmoSeleccionado == "APV":
             riegoOptimo = ProgramacionVoraz(self.finca)

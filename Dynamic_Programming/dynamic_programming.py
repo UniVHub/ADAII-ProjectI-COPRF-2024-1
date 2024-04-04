@@ -15,7 +15,7 @@ class ProgramacionDinamica:
     Methods:
       evaluarCosto(tablon, ti): Calcula el costo de regar un tablón en un tiempo dado.
       calcular(finca=None, tiempo=0, memo={}): Calcula el orden óptimo de riego de los tablones en la finca.
-      calcularResultadoOptimo(): Devuelve los índices de los tablones en el orden en que se deben regar según la solución óptima.
+      roPD(): Devuelve los índices de los tablones en el orden en que se deben regar según la solución óptima.
     """
 
     def __init__(self, finca):
@@ -75,10 +75,8 @@ class ProgramacionDinamica:
         if finca is None:
             finca = self.finca
 
-        if (len(finca) == 1):
-          tablon = finca[0] # Obtener el tablon
-          costo = self.evaluarCosto(tablon, 0) # Evaluar el tablon con el tiempo
-          return (costo, [tablon]) # Devolver el costo y el tablon
+        if (len(finca) == 0):
+           return (0, [])
         
         else:
           costoF = float('inf')
@@ -86,13 +84,12 @@ class ProgramacionDinamica:
           ordenesCandidatos = []
 
           for i in range (len(finca) - 1, -1, -1):
-            fincaRestante = finca[:] # Se crea una copia de finca
-            tablon = fincaRestante.pop(i)[:] # Se elimina y guarda el tablon iterado
+            fincaRestante = finca[:]
+            tablon = fincaRestante.pop(i)[:]
             tiempoR = self.calcularTiempo(fincaRestante)
 
-            costoTablon = self.evaluarCosto(tablon, tiempoR) # Se calcula el costo del tbln
+            costoTablon = self.evaluarCosto(tablon, tiempoR)
 
-            # Se realiza recursión con la finca restante
             if ((tuple(fincaRestante)) in memo):
               costo, orden = memo[(tuple(fincaRestante))]
             else:
@@ -100,36 +97,35 @@ class ProgramacionDinamica:
 
             memo[tuple(fincaRestante)] = (costo, orden)
 
-            # Se actualiza el costo y el orden ya que no tienen el tablon restante
             costo += costoTablon
             orden = orden + [tablon]
 
-            # Se añade el orden candidato
             ordenesCandidatos.append((costo, orden))
 
-          # Se evalua cual es el orden que consume menos
           for orden in ordenesCandidatos:
-            if (orden[0] < costoF): # Si el costo del orden es menor al que se tiene
+            if (orden[0] < costoF):
               costoF = orden[0]
               ordenF = orden[1]
               
-        # Retornar el orden y costo final
         return (costoF, ordenF)
 
-    def calcularResultadoOptimo(self):
+    def roPD(self):
         """
-        Devuelve los índices de los tablones en el orden en que se deben regar según la solución óptima.
+        Devuelve los índices de los tablones en el orden en que se deben regar según la solución óptima
+        a partir del resultado obtenido de la función "Calcular"
 
         Returns:
           list: Lista de índices de los tablones en el orden óptimo de riego.
         """
+        finca = self.finca[:]
         resultado = self.calcular()
         indices = []
 
         indices.append(resultado[0])
 
         for tablon in resultado[1]:
-            indices.append(self.finca.index(tablon))
+            indices.append(finca.index(tablon))
+            finca[self.finca.index(tablon)] = 0
 
         return indices
 

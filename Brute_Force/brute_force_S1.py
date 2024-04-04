@@ -13,7 +13,7 @@ class FuerzaBruta:
     Methods:
       evaluarCosto(tablon, ti): Evalúa el costo de riego de un tablón en un tiempo dado.
       calcular(i, j): Calcula el costo mínimo de riego y el orden óptimo de riego de los tablones en el rango [i, j).
-      calcularResultadoOptimo(): Devuelve los índices de los tablones en el orden en que se deben regar según la solución óptima.
+      roFB(): Devuelve los índices de los tablones en el orden en que se deben regar según la solución óptima.
     """
     
     def __init__(self, finca):
@@ -83,20 +83,25 @@ class FuerzaBruta:
 
             return (costo, nuevaFinca)
 
-    def calcularResultadoOptimo(self):
+    def roFB(self):
         """
         Devuelve los índices de los tablones en el orden en que se deben regar según la solución óptima.
+        a partir del resultado obtenido de la función "Calcular"
 
         Returns:
-        - list: Una lista de índices que representa el orden óptimo de riego de los tablones, cuyo primer elemento es el costo total del riego y los siguientes son los índices de los tablones en el orden en que se deben regar.
+        - list: Una lista de índices que representa el orden óptimo de riego de los tablones, 
+        cuyo primer elemento es el costo total del riego y los siguientes son los índices de los tablones 
+        en el orden en que se deben regar.
         """
+        finca = self.finca[:]
         resultado = self.calcular(0, self.n)
         indices = []
 
         indices.append(resultado[0])
 
         for tablon in resultado[1]:
-            indices.append(self.finca.index(tablon))
+            indices.append(finca.index(tablon))
+            finca[self.finca.index(tablon)] = 0
 
         return indices
 
