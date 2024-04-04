@@ -1,94 +1,54 @@
-class Voraz:
-
-
+class ProgramacionVoraz:
     def __init__(self, finca):
         self.finca = finca
         self.n = len(finca)
 
-    def tiempoRegadoTablones(self,ts):
-        """
-        Calculates the total time required to water each plank in a given permutation.
-        Args:
-            ts (list): A list of tuples representing the time required to water each plank.
-        Returns:
-            list: A list of integers representing the cumulative time required to water each plank in the given permutation.
-        """
-        tp = list(range(len(ts))) # lista de tiempo de regado
-        for t in range(len(ts)): # tablon de la permutacion
-            if t == 0 or len(tp)==1:
-                tp[t] = 0
+    # Función que calcula la heurística de un tablón, determinada como el tiempo de riego dividido entre la prioridad del mismo.
+    # (int, int, int) -> float
+    def heuristica(self, tablon):
+        tr = tablon[1]
+        p = tablon[2]
 
+        return tr/p
+
+    # Función que calcula el costo de riego de un tablón en un tiempo dado.
+    # (int, int, int), int -> int
+    def calcularCosto(self, tablon, tiempo):
+        if (tablon[0] - tablon[1]) >= tiempo:
+            return tablon[0] - (tiempo + tablon[1])
         else:
-            tr=ts[t-1][1] # tiempo de regado del tablon
-            tp[t]=tp[t-1] + tr
-        return tp
+            return tablon[2] * ((tiempo + tablon[1]) - tablon[0])
 
-
-    def costo(self,ts, ti,tr, pi):
-        """
-        Calculate the cost based on the given parameters.
-
-        Parameters:
-        ts (int): Survival time.
-        ti (int): Start Time.
-        tr (int): Watering time.
-        pi (int): The penalty factor.
-
-        Returns:
-        int: The calculated cost.
-
-        """
-        if (ts- tr) >= ti:
-            return ts-(ti+tr)
+    # Función que calcula el costo total de riego de una finca.
+    # list -> (int, list)
+    def roV(self, fincaIngresada=None):
+        if fincaIngresada == None:
+            finca = self.finca.copy()
         else:
-            return pi*((ti+tr)-ts)
+            finca = fincaIngresada.copy()
 
+        # Se añade a cada tablon un índice que representa su posición en la finca.
+        for i in range(len(finca)):
+            finca[i] = (finca[i][0], finca[i][1], finca[i][2], i)
 
+        riegoOptimo = []
+        costoRiego = 0
+        tiempo = 0
+        n_tablones = self.n
 
-    def costoFinca(self,p):
-        """
-        Calculates the total cost of maintaining a farm.
+        while n_tablones > 0:
+            prioridades = []
+            for i in range (n_tablones):
+                prioridades.append(self.heuristica(finca[i]))
 
-        Args:
-            p (list): A list of tuples representing the properties of each plot in the farm. Each tuple contains the following elements:
-                - Element 0: Survival time.
-                - Element 1: The time required to water the plot.
-                - Element 2: The cost of watering the plot.
+            indice_tablonOptimo = prioridades.index(min(prioridades))
+            tablonOptimo = finca[indice_tablonOptimo]
+            riegoOptimo.append(tablonOptimo[3])
 
-        Returns:
-            float: The total cost of maintaining the farm.
+            costoRiego += self.calcularCosto(tablonOptimo, tiempo)
+            tiempo += tablonOptimo[1]
 
-        """
-        c = 0
-        ti = self.tiempoRegadoTablones(p)
-        for t in range(len(p)):
-            c += self.costo(p[t][0],ti[t],p[t][1],p[t][2])
-        return c
+            finca.pop(indice_tablonOptimo)
+            n_tablones -= 1
 
-
-    def heuristica(tablon):
-        """
-        Calculates the heuristic value for a given tablon.
-
-        The heuristic value is calculated as the difference between the survival time of the tablon and the time for watering the tablon, divided by the priority of the tablon.
-
-        Parameters:
-        tablon (list): A list containing the survival time, the time for watering the tablon, and the priority of the tablon.
-
-        Returns:
-        float: The calculated heuristic value.
-
-        """
-        return round((tablon[0]-tablon[1])/tablon[2],2)
-
-    def roV(self,finca):
-        n = self.n
-        memo = [(1000,[])]*n
-        if n == 1:
-            return self.costoFinca(finca)
-        else:
-            for i in range(n):
-                memo[i] = self.heuristica(finca[i]),[finca[i]]
-
-            memo.sort(key=lambda x: x[0])
-        return memo,self.costoFinca(finca)
+        return (costoRiego, riegoOptimo)

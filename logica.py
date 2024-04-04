@@ -1,7 +1,6 @@
 from Brute_Force.brute_force_S1 import FuerzaBruta
-from Dynamic_Programming.dynamic_programming import ProgramacionDinamica
-from Greedy_Programming.greedy_programming import Voraz
-import time
+from Dynamic_Programming.dinamic_programming import ProgramacionDinamica
+from Greedy_Programming.greedy_programming import ProgramacionVoraz
 
 class Logica:
     def __init__(self):
@@ -114,15 +113,16 @@ class Logica:
             return executionTime
 
         elif self.algoritmoSeleccionado == "APV":
-            print("PENDIENTE")
-            return 10;
+            riegoOptimo = ProgramacionVoraz(self.finca)
+            solucion = riegoOptimo.roV()
+            self.resultadoOptimo = solucion
+            return [solucion[0]] + solucion[1]
+        
         elif self.algoritmoSeleccionado == "APD":
             riegoOptimo = ProgramacionDinamica(self.finca)
-            startTime = time.time()
-            solucion = riegoOptimo.roPD()
-            endTime = time.time()
-            executionTime = endTime - startTime
+            solucion = riegoOptimo.calcularResultadoOptimo()
             self.resultadoOptimo = solucion
-            return executionTime
+            return solucion
+        
         else:
             return ["Algoritmo no seleccionado"]
