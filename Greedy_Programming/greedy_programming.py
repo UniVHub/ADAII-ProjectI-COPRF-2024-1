@@ -3,13 +3,24 @@ class ProgramacionVoraz:
         self.finca = finca
         self.n = len(finca)
 
-    # Función que calcula la heurística de un tablón, determinada como el tiempo de riego dividido entre la prioridad del mismo.
-    # (int, int, int) -> float
-    def heuristica(self, tablon):
+    # Función que calcula la heurística de un tablón.
+    # (int, int) -> float
+    def heuristica(self, tablon, n):
         tr = tablon[1]
         p = tablon[2]
+        ts = tablon[0]
+        factor = 0
 
-        return tr/p
+        if n <= 5:
+            factor = 1
+        elif n <= 10:
+            factor = 1.7
+        elif n <= 15:
+            factor = 2.2
+        else:
+            factor = 2.5
+
+        return ts + (ts + tr**factor)/p
 
     # Función que calcula el costo de riego de un tablón en un tiempo dado.
     # (int, int, int), int -> int
@@ -39,7 +50,7 @@ class ProgramacionVoraz:
         while n_tablones > 0:
             prioridades = []
             for i in range (n_tablones):
-                prioridades.append(self.heuristica(finca[i]))
+                prioridades.append(self.heuristica(finca[i], self.n))
 
             indice_tablonOptimo = prioridades.index(min(prioridades))
             tablonOptimo = finca[indice_tablonOptimo]
