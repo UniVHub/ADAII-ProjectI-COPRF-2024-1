@@ -75,10 +75,8 @@ class ProgramacionDinamica:
         if finca is None:
             finca = self.finca
 
-        if (len(finca) == 1):
-          tablon = finca[0]
-          costo = self.evaluarCosto(tablon, 0)
-          return (costo, [tablon])
+        if (len(finca) == 0):
+           return (0, [])
         
         else:
           costoF = float('inf')
