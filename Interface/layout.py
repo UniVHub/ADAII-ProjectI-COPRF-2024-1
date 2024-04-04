@@ -1,5 +1,5 @@
-from sidebar import Sidebar
-from contenido_principal import ContenidoInicial
+from Interface.sidebar import Sidebar
+from Interface.contenido_principal import ContenidoInicial
 
 class Layout:
     def __init__(self, raiz, logica):

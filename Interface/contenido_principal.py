@@ -1,4 +1,4 @@
-from config import *
+from Interface.config import *
 
 # ---------------------------------------------------------------------------- #
 #                                Metodos Utiles                                #
@@ -650,7 +650,7 @@ class Salida:
         # Abre el diálogo de guardar archivo y obtén la ubicación del archivo
         archivo = tk.filedialog.asksaveasfilename(defaultextension='.txt')
 
-        solucion = self.logica.usar_algoritmo()
+        solucion = self.logica.resultadoOptimo
 
         # Si el usuario seleccionó una ubicación, guarda el archivo
         if archivo:

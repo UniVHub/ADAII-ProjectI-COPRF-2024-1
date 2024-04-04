@@ -4,8 +4,8 @@ import os
 # Añadir al path el directorio actual
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), ".")))
 
-from config import *
-from layout import Layout
+from Interface.config import *
+from Interface.layout import Layout
 
 
 class Dashboard:

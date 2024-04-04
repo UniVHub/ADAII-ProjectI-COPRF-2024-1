@@ -1,4 +1,4 @@
-from config import *
+from Interface.config import *
 
 class Sidebar:
     def __init__(self, raiz):
