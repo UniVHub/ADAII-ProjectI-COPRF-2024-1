@@ -478,9 +478,9 @@ class Cargando:
         thread.start()
 
     def _ejecutar_algoritmo(self):
-        self.logica.usar_algoritmo()
-        time.sleep(2)
-        cambiar_ventana(self.frame, Salida, self.root, self.logica)
+        time.sleep(0.5)
+        executionTime = self.logica.usar_algoritmo()
+        cambiar_ventana(self.frame, Salida, self.root, self.logica, executionTime)
 
     def _crear_frame_carga(self):
         frameCarga = ctk.CTkFrame(master=self.frame, fg_color="transparent")
@@ -512,9 +512,10 @@ class Salida:
     botonSalir: Botón para salir.
     """
 
-    def __init__(self, root, logica):
+    def __init__(self, root, logica, executionTime):
         self.root = root
         self.logica = logica
+        self.executionTime = executionTime
 
         self.frame = ctk.CTkFrame(
             master=root, fg_color="#fff", width=680, corner_radius=0
@@ -564,6 +565,21 @@ class Salida:
         )
         entryAlgoritmo.pack(side="top", anchor="w", pady=(10, 0))
 
+        if self.executionTime < 0.001:
+            executionTimeParsed = "{:.3f} microsegundos".format(self.executionTime * 1000000)
+        else:
+            executionTimeParsed = "{:.3f} segundos".format(self.executionTime)
+            
+        entryExecutionTime = ctk.CTkLabel(
+            master=frameEntrada,
+            font=fuente_texto_grande,
+            text_color=color_verde,
+            fg_color=color_blanco,
+            corner_radius=5,
+            text="Tiempo de ejecución: " + str(executionTimeParsed),
+        )
+        entryExecutionTime.pack(side="top", anchor="w", pady=(10, 0))
+
     def _crear_frame_textbox(self):
         textboxFrame = ctk.CTkFrame(master=self.frame, fg_color="transparent")
         textboxFrame.pack(anchor="n", fill="both", pady=(40, 0), padx=20)
@@ -575,14 +591,14 @@ class Salida:
             text_color=color_blanco,
             fg_color=color_verde_hover,
             corner_radius=5,
-            height=350,
+            height=300,
         )
         self.textbox.pack(anchor="center", fill="x", padx=10)
         self.textbox.insert("end", "El algoritmo se esta ejecutando...")
         self.textbox.configure(state="disabled")
 
-        solucion = self.logica.usar_algoritmo()
-
+        solucion = self.logica.resultadoOptimo
+        
         # Clear the textbox
         self.textbox.configure(state="normal")
         self.textbox.delete("1.0", "end")
