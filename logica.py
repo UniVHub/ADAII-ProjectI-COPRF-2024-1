@@ -116,7 +116,8 @@ class Logica:
         elif self.algoritmoSeleccionado == "APV":
             riegoOptimo = ProgramacionVoraz(self.finca)
             startTime = time.time()
-            solucion = riegoOptimo.roV()[1]
+            costo, orden = riegoOptimo.roV()
+            solucion = [costo] + orden
             endTime = time.time()
             executionTime = endTime - startTime
             self.resultadoOptimo = solucion

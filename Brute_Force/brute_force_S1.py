@@ -100,8 +100,9 @@ class FuerzaBruta:
         indices.append(resultado[0])
 
         for tablon in resultado[1]:
-            indices.append(finca.index(tablon))
-            finca[self.finca.index(tablon)] = 0
+            indice = finca.index(tablon)
+            indices.append(indice)
+            finca[indice] = None
 
         return indices
 
